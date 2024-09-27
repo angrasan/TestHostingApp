@@ -7,8 +7,12 @@ from flask_login import login_user, LoginManager, current_user, logout_user
 from functools import wraps
 from werkzeug.security import generate_password_hash, check_password_hash
 
+import os
+import dotenv
+
 from forms import CreatePostForm, RegisterForm, LoginForm, CommentForm
 from tables import db, Base, BlogPost, User, Comment
+
 
 # テーブルをrelationshipした場合に渡す型は？オブジェクトを渡すのは分かるけど... str型 はerror
 # current_user = <class 'werkzeug.local.LocalProxy'>
@@ -18,8 +22,9 @@ from tables import db, Base, BlogPost, User, Comment
 # This CKEditor 4.22.1 version is not secure.
 # Consider upgrading to the latest one, 4.25.0- its.
 
+dotenv.load_dotenv()
 app = Flask(__name__)
-app.config['SECRET_KEY'] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
+app.config['SECRET_KEY'] = os.environ.get('FLASK_KEY')
 ckeditor = CKEditor(app)
 Bootstrap5(app)
 
@@ -33,7 +38,7 @@ def load_user(user_id):
     return db.get_or_404(User, user_id)
 
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///posts.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DB_URI', 'sqlite:///posts.db')
 db.init_app(app)
 
 
